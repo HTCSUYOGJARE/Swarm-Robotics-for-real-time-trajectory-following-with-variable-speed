@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>turtlebot3_follower</name>
+  <version>0.0.0</version>
+  <description>The turtlebot3_follower package</description>
+  <maintainer email="stochlab@todo.todo">stochlab</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>nav_msgs</build_depend> <!-- Ensure nav_msgs is here -->
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>turtlesim</build_depend>
+  <build_depend>teleop_twist_keyboard</build_depend> <!-- Added teleop dependency -->
+
+  <build_export_depend>geometry_msgs</build_export_depend>
+  <build_export_depend>nav_msgs</build_export_depend> <!-- Ensure nav_msgs is here -->
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>std_msgs</build_export_depend>
+  <build_export_depend>turtlesim</build_export_depend>
+  <build_export_depend>teleop_twist_keyboard</build_export_depend> <!-- Added teleop dependency -->
+
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>nav_msgs</exec_depend> <!-- Ensure nav_msgs is here -->
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>turtlesim</exec_depend>
+  <exec_depend>teleop_twist_keyboard</exec_depend> <!-- Added teleop dependency -->
+
+  <export>
+  </export>
+</package>
+
+

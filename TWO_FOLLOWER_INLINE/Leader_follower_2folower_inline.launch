@@ -1,0 +1,49 @@
+<launch>
+  <!-- Launch Gazebo world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/turtlebot3_worlds/empty.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+  </include>
+
+  <!-- Leader settings -->
+  <arg name="leader_x_pos" default="0.0"/>
+  <arg name="leader_y_pos" default="0.0"/>
+  <arg name="leader_z_pos" default="0.0"/>
+  <arg name="leader_yaw" default="0.0"/>
+
+  <!-- Leader node -->
+  <group ns="leader">
+    <param name="robot_description" command="$(find xacro)/xacro $(find turtlebot3_description)/urdf/turtlebot3_burger.urdf.xacro"/>
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen"/>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model leader -x $(arg leader_x_pos) -y $(arg leader_y_pos) -z $(arg leader_z_pos) -Y $(arg leader_yaw) -param robot_description"/>
+    <node pkg="turtlebot3_teleop" type="turtlebot3_teleop_key" name="teleop" output="screen" ns="leader">
+      <remap from="cmd_vel" to="leader/cmd_vel"/>
+    </node>
+  </group>
+
+  <!-- Follower 1 settings -->
+  <group ns="follower1">
+    <param name="robot_description" command="$(find xacro)/xacro $(find turtlebot3_description)/urdf/turtlebot3_burger.urdf.xacro"/>
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen"/>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model follower1 -x -0.5 -y 0
+     -z 0.0 -param robot_description"/>
+    <node pkg="turtlebot3_follower" type="follower1.py" name="follower1_node" output="screen">
+      <param name="offset_x" value="-0.5"/>
+      <param name="offset_y" value="0"/>
+    </node>
+  </group>
+
+  <!-- Follower 2 settings -->
+  <group ns="follower2">
+    <param name="robot_description" command="$(find xacro)/xacro $(find turtlebot3_description)/urdf/turtlebot3_burger.urdf.xacro"/>
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen"/>
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model follower2 -x -1 -y 0 -z 0.0 -param robot_description"/>
+    <node pkg="turtlebot3_follower" type="follower2.py" name="follower2_node" output="screen">
+      <param name="offset_x" value="-1"/>
+      <param name="offset_y" value="0"/>
+    </node>
+  </group>
+</launch>

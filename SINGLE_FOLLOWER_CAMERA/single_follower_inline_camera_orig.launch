@@ -1,0 +1,78 @@
+<launch>
+  <!-- Set to value="gdbserver localhost:10000" for remote debugging -->
+  <arg name="launch_prefix" default="" />
+
+  <!-- Initial positions for leader and follower -->
+  <arg name="leader_x_pos" default="0.0"/>
+  <arg name="leader_y_pos" default="0.0"/>
+  <arg name="leader_z_pos" default="0.0"/>
+  <arg name="leader_yaw" default="0.0"/>
+
+  <arg name="follower_x_pos" default="-0.5"/>
+  <arg name="follower_y_pos" default="0.0"/>
+  <arg name="follower_z_pos" default="0.0"/>
+  <arg name="follower_yaw" default="0.0"/>
+
+  <!-- Set the model argument (burger, waffle, or waffle_pi) -->
+  <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
+
+  <!-- Include Gazebo world launch -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="empty.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <group ns="leader">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="leader" />
+    </node>
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model leader -x $(arg leader_x_pos) -y $(arg leader_y_pos) -z $(arg leader_z_pos) -Y $(arg leader_yaw) -param robot_description" />
+
+    <!-- Teleop Node for Leader -->
+    <node pkg="turtlebot3_teleop" type="turtlebot3_teleop_key" name="teleop" output="screen" ns="leader">
+      <remap from="cmd_vel" to="leader/cmd_vel"/>
+    </node>
+
+    <!-- Camera Node for Leader -->
+    <node pkg="gazebo_ros" type="spawn_model" name="leader_camera_spawn" output="screen">
+      <param name="camera_name" value="camera" />
+      <param name="frame_id" value="leader_camera_link"/>
+      <remap from="/leader/camera/image_raw" to="/leader/camera/image_raw" />
+    </node>
+  </group>
+
+  <group ns="follower">
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
+
+    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+      <param name="publish_frequency" type="double" value="50.0" />
+      <param name="tf_prefix" value="follower" />
+    </node>
+
+    <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model follower -x $(arg follower_x_pos) -y $(arg follower_y_pos) -z $(arg follower_z_pos) -Y $(arg follower_yaw) -param robot_description" />
+
+    <!-- Follower Node -->
+    <node pkg="turtlebot3_follower" type="single_follower_inline.py" name="follower_node" output="screen" />
+
+    <!-- Camera Node for Follower -->
+    <node pkg="gazebo_ros" type="spawn_model" name="follower_camera_spawn" output="screen">
+      <param name="camera_name" value="camera" />
+      <param name="frame_id" value="follower_camera_link"/>
+      <remap from="/follower/camera/image_raw" to="/follower/camera/image_raw" />
+    </node>
+
+    
+  </group>
+
+  
+
+</launch>
+
